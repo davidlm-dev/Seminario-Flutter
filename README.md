@@ -2,6 +2,10 @@
 
 A new Flutter project.
 
+## Fuentes
+
+Github copilot y la presentación del seminario de los compañeros de ea.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
