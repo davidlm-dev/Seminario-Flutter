@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthService {
   bool isLoggedIn = false; // Variable para almacenar el estado de autenticación
+  static Map<String, dynamic>? currentUser;
 
   static String get _baseUrl {
     if (kIsWeb) {
@@ -33,13 +34,36 @@ class AuthService {
       print("Resposta rebuda amb codi: ${response.statusCode}");
 
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+        final data = json.decode(response.body);
+
+        // Save user data from the login response
+        currentUser = {
+          'id': data['id'],
+          'email': data['email'],
+        };
+
+        isLoggedIn = true;
+
+        return data;
       } else {
         return {'error': 'email o contrasenya incorrectes'};
       }
     } catch (e) {
       print("Error al fer la solicitud: $e");
       return {'error': 'Error de connexió'};
+    }
+  }
+
+  Future<void> fetchCurrentUser(String token) async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/me'),
+      headers: {'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      currentUser = json.decode(response.body);
+    } else {
+      throw Exception('Failed to fetch user data');
     }
   }
 
